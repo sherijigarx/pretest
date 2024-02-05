@@ -172,7 +172,7 @@ class AIModelService:
             bt.logging.error("Failed to get git commit hash. '.git' folder is missing")
             return None
         
-    def get_latest_commit(owner, repo):
+    def get_latest_commit(self, owner, repo):
         url = f"https://api.github.com/repos/{owner}/{repo}/commits"
         response = requests.get(url)
 
