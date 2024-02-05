@@ -42,8 +42,10 @@ class AIModelService:
         self.scores = AIModelService._scores
         self.uid = self.metagraph.hotkeys.index(self.wallet.hotkey.ss58_address)
         self.api = wandb.Api()
-        self.project_path = "subnet16team/AudioSubnet_Miner"
+        self.project_path_miner = "subnet16team/AudioSubnet_Miner"
+        self.project_path_valid = "subnet16team/AudioSubnet_Valid"
         self.runs_data = self.filtered_uids_without_commit()
+        self.old_valids = self.valids_without_commit()
 
     def get_config(self):
         parser = argparse.ArgumentParser()
@@ -190,7 +192,26 @@ class AIModelService:
             return []
         
         runs_data_set = set()
-        runs = self.api.runs(self.project_path)
+        runs = self.api.runs(self.project_path_miner)
+        for run in runs:
+            if run.state == 'running':
+                run_commit = run.config.get('commit', '')
+                if run_commit != latest_commit:
+                    uid = run.config.get('uid', None)
+                    if uid:
+                        runs_data_set.add(uid)
+        
+        runs_data = list(runs_data_set)
+        return runs_data
+    
+    def valids_without_commit(self):
+        latest_commit = self.get_latest_commit(owner="UncleTensor", repo="AudioSubnet")
+        if not latest_commit:
+            bt.logging.error("Failed to get the latest commit hash.")
+            return []
+        
+        runs_data_set = set()
+        runs = self.api.runs(self.project_path_valid)
         for run in runs:
             if run.state == 'running':
                 run_commit = run.config.get('commit', '')
