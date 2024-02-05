@@ -191,7 +191,7 @@ class TextToSpeechService(AIModelService):
             if self.uid not in self.old_valids:
                 self.update_weights(self.scores)
             else:
-                bt.logging.error(f"Validator's repository is not up-to-date. Skipping weight update. Validator cannot update weights.")
+                bt.logging.error(f"Validator's repository is not up-to-date. Skipping weight update. Validator cannot update weights. Please update your repository to the latest version.")
             self.last_updated_block = self.current_block
         else:
             bt.logging.info(f"Updating weights. Last update was at block:  {self.last_updated_block}")
