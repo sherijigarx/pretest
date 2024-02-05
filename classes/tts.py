@@ -106,6 +106,7 @@ class TextToSpeechService(AIModelService):
                 step += 1
                 await asyncio.sleep(0.5)  # Adjust the sleep time as needed
                 if step % 5 == 0 and self.config.auto_update == 'yes':
+                    bt.logging.info(f"Checking for updatessssssssssssssssssssssssssssssssssssssss in the repository.")
                     lib.utils.try_update()
             except KeyboardInterrupt:
                 print("Keyboard interrupt detected. Exiting TextToSpeechService.")
