@@ -562,8 +562,7 @@ def main(config):
             step += 1
             time.sleep(1)
 
-            if step % 5 == 0 and config.auto_update == 'yes':
-                bt.logging.info("Checking for updatessssssssssssssssssssssssssssssssssssssss.")
+            if step % 1000 == 0 and config.auto_update == 'yes':
                 lib.utils.try_update()
 
         # If someone intentionally stops the miner, it'll safely terminate operations.
