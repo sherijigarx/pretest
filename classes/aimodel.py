@@ -19,6 +19,9 @@ import platform
 import psutil
 import GPUtil
 import subprocess
+import requests
+import wandb
+
 
 class AIModelService:
     _scores = None
@@ -38,6 +41,9 @@ class AIModelService:
             AIModelService._scores = torch.zeros_like(self.metagraph.S, dtype=torch.float32)
         self.scores = AIModelService._scores
         self.uid = self.metagraph.hotkeys.index(self.wallet.hotkey.ss58_address)
+        self.api = wandb.Api()
+        self.project_path = "subnet16team/AudioSubnet_Valid"
+        self.runs_data = []
 
     def get_config(self):
         parser = argparse.ArgumentParser()
@@ -166,5 +172,34 @@ class AIModelService:
             bt.logging.error("Failed to get git commit hash. '.git' folder is missing")
             return None
         
+    def get_latest_commit(owner, repo):
+        url = f"https://api.github.com/repos/{owner}/{repo}/commits"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            commits = response.json()
+            return commits[0]['sha'] if commits else None
+        else:
+            print(f"Failed to get the latest commit. Status code: {response.status_code}")
+            return None
+
+    async def filtered_uids_without_commit(self):
+        latest_commit = self.get_latest_commit(owner="UncleTensor", repo="AudioSubnet")
+        if not latest_commit:
+            bt.logging.error("Failed to get the latest commit hash.")
+            return []
+        
+        runs_data_set = set()
+        runs = self.api.runs(self.project_path)
+        for run in runs:
+            if run.state == 'running':
+                run_commit = run.config.get('commit', '')
+                if run_commit != latest_commit:
+                    uid = run.config.get('uid', None)
+                    if uid:
+                        runs_data_set.add(uid)
+        
+        self.runs_data = list(runs_data_set)
+    
     async def run_async(self):
         raise NotImplementedError

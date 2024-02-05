@@ -89,8 +89,8 @@ class VoiceCloningService(AIModelService):
         commit = self.get_git_commit_hash()
         self.wandb_run = wandb.init(
             name=name,
-            project="AudioSubnet_Valid",
-            entity="subnet16team",
+            project="subnet16",
+            entity="testingforsubnet16",
             config={
                 "uid": self.uid,
                 "hotkey": self.wallet.hotkey.ss58_address,
@@ -354,6 +354,8 @@ class VoiceCloningService(AIModelService):
             filtered_uid = [item[0] for item in filtered_zipped_uid] if filtered_zipped_uid else []
             self.filtered_axon = filtered_uid
             bt.logging.info(f"filtered_uids:{filtered_uids}")
+            filtered_uids = [uid for uid in filtered_uids if uid not in self.runs_data]
+            bt.logging.info(f"filtered_uids after removing the uids without latest commit hash :{filtered_uids}")
             dendrites_to_query = random.sample( filtered_uids, min( dendrites_per_query, len(filtered_uids) ) )
             bt.logging.info(f"Dendrites to be queried for Voice Cloning Service :{dendrites_to_query}")
             return dendrites_to_query
