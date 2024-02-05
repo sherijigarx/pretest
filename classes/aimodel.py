@@ -42,7 +42,7 @@ class AIModelService:
         self.scores = AIModelService._scores
         self.uid = self.metagraph.hotkeys.index(self.wallet.hotkey.ss58_address)
         self.api = wandb.Api()
-        self.project_path = "subnet16team/AudioSubnet_Valid"
+        self.project_path = "subnet16team/AudioSubnet_Miner"
         self.runs_data = []
 
     def get_config(self):
