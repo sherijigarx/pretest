@@ -43,7 +43,7 @@ class AIModelService:
         self.uid = self.metagraph.hotkeys.index(self.wallet.hotkey.ss58_address)
         self.api = wandb.Api()
         self.project_path = "subnet16team/AudioSubnet_Miner"
-        self.runs_data = []
+        self.runs_data = self.filtered_uids_without_commit()
 
     def get_config(self):
         parser = argparse.ArgumentParser()
@@ -183,7 +183,7 @@ class AIModelService:
             print(f"Failed to get the latest commit. Status code: {response.status_code}")
             return None
 
-    async def filtered_uids_without_commit(self):
+    def filtered_uids_without_commit(self):
         latest_commit = self.get_latest_commit(owner="UncleTensor", repo="AudioSubnet")
         if not latest_commit:
             bt.logging.error("Failed to get the latest commit hash.")
@@ -199,7 +199,8 @@ class AIModelService:
                     if uid:
                         runs_data_set.add(uid)
         
-        self.runs_data = list(runs_data_set)
+        runs_data = list(runs_data_set)
+        return runs_data
     
     async def run_async(self):
         raise NotImplementedError
